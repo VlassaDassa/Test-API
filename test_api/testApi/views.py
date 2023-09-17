@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards
-from .serializers import CategorySerializer, SubcategorySerializer, SliderPhotoSerializer, ProductSerializer, DeliveryPointSerializer, AndreySerializer, BankCardsSerializer
+from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards, DeliverySlider
+from .serializers import CategorySerializer, SubcategorySerializer, SliderPhotoSerializer, ProductSerializer, DeliveryPointSerializer, AndreySerializer, BankCardsSerializer, DeliverySliderSerializer
 import time
 
 
@@ -122,4 +122,7 @@ class SliderPhotoViewSet(viewsets.ReadOnlyModelViewSet):
                 item.pop(field, None)
         return response
     
+class DeliverySliderViewsSet(viewsets.ModelViewSet):
+    queryset = DeliverySlider.objects.all()
+    serializer_class = DeliverySliderSerializer
 

@@ -13,6 +13,7 @@ router.register(r'add_bank_card', views.AddBankCardViewSet)
 # router.register(r'delete_bank_card/(?P<id>\d+)', views.DeleteBankCardViewSet)
 # router.register(r'delete_bank_card', views.DeleteBankCardView, basename='delete-bank-card')
 router.register(r'^products/(?P<start_limit>\d+)/(?P<count>\d+)', views.ProductViewSet)
+router.register(r'^deliveryslider', views.DeliverySliderViewsSet)
 
 urlpatterns = router.urls
 

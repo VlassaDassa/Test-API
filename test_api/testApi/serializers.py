@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards
+from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards, DeliverySlider
 
 
 
@@ -67,3 +67,8 @@ class SliderPhotoSerializer(serializers.ModelSerializer):
         fields = ['big_photo', 'medium_photo', 'small_photo', 'big_photo_url', 'medium_photo_url', 'small_photo_url']
 
 
+class DeliverySliderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeliverySlider
+        fields = '__all__'
+        

@@ -63,3 +63,10 @@ class BankCards(models.Model):
     
     def __str__(self):
         return str(self.card_number)
+    
+
+class DeliverySlider(models.Model):
+    photo = models.ImageField(upload_to='images/deliveryslider')
+    
+
+
