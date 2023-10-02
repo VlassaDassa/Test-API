@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/', include('testApi.urls')),
     path('api/delete_bank_card/<int:pk>/', views.delete_bank_card, name='delete-bank-card'),
     path('api/update_bank_card/', views.update_status_bank_card, name='update-bank-card'),
+    path('api/delete_cart_product/<int:pk>/', views.delete_cart_product, name='delete-cart-product')
 ]
 
 

@@ -1,0 +1,69 @@
+[
+    {
+      "model": "testApi.Cart",
+      "pk":1,
+      "fields":{
+        "subcategory": 1,
+        "name": "Шерлок",
+        "product_photo": "images/product_photo/book_1.jpg",
+        "price": 234,
+        "count": 0,
+        "isChecked": false
+      }
+    },
+
+    {
+        "model": "testApi.Cart",
+        "pk": 2,
+        "fields":{
+          "subcategory": 2,
+          "name": "Рапунцель",
+          "product_photo": "images/product_photo/book_2.jpg",
+          "price": 544,
+          "count": 0,
+          "isChecked": false
+        }
+    },
+
+    {
+        "model": "testApi.Cart",
+        "pk": 3,
+        "fields":{
+          "subcategory": 2,
+          "name": "Космос",
+          "product_photo": "images/product_photo/book_3.jpg",
+          "price": 621,
+          "count": 0,
+          "isChecked": false
+        }
+    },
+
+    {
+        "model": "testApi.Cart",
+        "pk": 4,
+        "fields":{
+          "subcategory": 2,
+          "name": "Компьютер",
+          "product_photo": "images/product_photo/book_4.jpg",
+          "price": 123,
+          "count": 0,
+          "isChecked": false
+        }
+    },
+
+
+    {
+        "model": "testApi.Cart",
+        "pk": 5,
+        "fields":{
+          "subcategory": 2,
+          "name": "Путь в IT",
+          "product_photo": "images/product_photo/book_5.jpg",
+          "price": 321,
+          "count": 0,
+          "isChecked": false
+        }
+    }
+]
+
+

@@ -48,11 +48,6 @@ class DeliveryPoints(models.Model):
     def __str__(self):
         return self.address
     
-    
-    
-class AndreyDelivey(models.Model):
-    photo = models.ImageField(upload_to='images/andreyphoto')
-   
    
 class BankCards(models.Model):
     card_number = models.IntegerField(blank=False)
@@ -63,3 +58,15 @@ class BankCards(models.Model):
     
     def __str__(self):
         return str(self.card_number)
+    
+    
+class Cart(models.Model):
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='cart_subcategory')
+    name = models.CharField(max_length=100, blank=False)
+    product_photo = models.ImageField(upload_to='images/product_photo')
+    price = models.IntegerField(blank=False)
+    count = models.IntegerField(blank=False, default=0)
+    isChecked = models.BooleanField(blank=False, default=False)
+    
+    def __str__(self):
+        return self.name

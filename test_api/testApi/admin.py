@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards
+from . import models
 
 # Register your models here.
-admin.site.register(Category)
-admin.site.register(Subcategory)
-admin.site.register(SliderPhoto)
-admin.site.register(Product)
-admin.site.register(DeliveryPoints)
-admin.site.register(AndreyDelivey)
-admin.site.register(BankCards)
+admin.site.register(models.Category)
+admin.site.register(models.Subcategory)
+admin.site.register(models.SliderPhoto)
+admin.site.register(models.Product)
+admin.site.register(models.DeliveryPoints)
+admin.site.register(models.BankCards)
+admin.site.register(models.Cart)
 

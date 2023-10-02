@@ -1,36 +1,29 @@
 from rest_framework import serializers
-from .models import Category, Subcategory, SliderPhoto, Product, DeliveryPoints, AndreyDelivey, BankCards
-
+from . import models
 
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = models.Category
         fields = '__all__'
         
 
 class BankCardsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BankCards
-        fields = '__all__'
-        
-        
-class AndreySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AndreyDelivey
+        model = models.BankCards
         fields = '__all__'
         
         
 class DeliveryPointSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DeliveryPoints
+        model = models.DeliveryPoints
         fields = '__all__'
         
         
 class SubcategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subcategory
+        model = models.Subcategory
         fields = '__all__'
         
         
@@ -38,7 +31,7 @@ class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.subcategory_name', read_only=True)
     
     class Meta:
-        model = Product
+        model = models.Product
         fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks']
         
         
@@ -63,7 +56,11 @@ class SliderPhotoSerializer(serializers.ModelSerializer):
         return None
 
     class Meta:
-        model = SliderPhoto
+        model = models.SliderPhoto
         fields = ['big_photo', 'medium_photo', 'small_photo', 'big_photo_url', 'medium_photo_url', 'small_photo_url']
 
 
+class CartProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Cart
+        fields = '__all__'
