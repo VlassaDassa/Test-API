@@ -29,11 +29,17 @@ class SubcategorySerializer(serializers.ModelSerializer):
         
 class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.subcategory_name', read_only=True)
-    
+    is_in_cart = serializers.SerializerMethodField()  
+
     class Meta:
         model = models.Product
-        fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks']
+        fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']  # Включаем is_in_cart в список полей
+
+    def get_is_in_cart(self, obj):
+        cart_exists = models.Cart.objects.filter(product=obj).exists()
+        return cart_exists
         
+
         
 class SliderPhotoSerializer(serializers.ModelSerializer):
     big_photo_url = serializers.SerializerMethodField()
@@ -61,6 +67,21 @@ class SliderPhotoSerializer(serializers.ModelSerializer):
 
 
 class CartProductSerializer(serializers.ModelSerializer):
+    subcategory = serializers.CharField(source='product.subcategory.subcategory_name')
+    name = serializers.CharField(source='product.name')
+    product_photo = serializers.ImageField(source='product.product_photo')
+    price = serializers.IntegerField(source='product.price')
+    rating = serializers.IntegerField(source='product.rating')
+    count_feedbacks = serializers.IntegerField(source='product.count_feedbacks')
+
     class Meta:
         model = models.Cart
+        fields = ['id', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks']
+        
+        
+class OnRoadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OnRoad
         fields = '__all__'
+        
+    

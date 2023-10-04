@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from . import models
@@ -141,3 +141,93 @@ def delete_cart_product(request, pk):
         return Response(status=status.HTTP_200_OK)
     except models.Cart.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    
+# Deleting cart product from product_id
+@api_view(['DELETE'])
+def delete_cart_product_from_prod_id(request, pk):
+    try:
+        models.Cart.objects.filter(product_id=pk).delete()
+        return Response(status=status.HTTP_200_OK)
+    except models.Cart.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+# Adding cart product
+@api_view(['POST'])
+def add_product_to_cart(request, pk):
+    if request.method == 'POST':
+        product_id = pk
+
+        try:
+            product = models.Product.objects.get(pk=product_id)
+        except models.Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        cart_item, created = models.Cart.objects.get_or_create(product=product)
+        serializer = serializers.CartProductSerializer(cart_item)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+# Getting current delivery point
+class CurrentDeliveryPointViewsSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DeliveryPointSerializer
+    queryset = models.DeliveryPoints.objects.filter(seleceted=True)
+    
+    
+# Getting current bank card
+class CurrentBankCardViewsSet(viewsets.ModelViewSet):
+    serializer_class = serializers.BankCardsSerializer
+    queryset = models.BankCards.objects.filter(main_card=True)
+    
+
+# Adding product to "OnRoad" model
+@api_view(['POST'])
+def add_product_to_onroad(request):
+    if request.method == 'POST':
+        try:
+            data = request.data
+            product_items = data.get('products', [])
+            bank_card_id = data.get('bank_card_id')
+            delivery_point_id = data.get('delivery_point_id')
+
+            bank_card = models.BankCards.objects.get(pk=bank_card_id)
+            delivery_point = models.DeliveryPoints.objects.get(pk=delivery_point_id)
+
+            total_price = 0
+
+            onroad_items = []
+
+            cart_ids_to_delete = []
+
+            with transaction.atomic():
+                for product_item in product_items:
+                    cart_id = product_item.get('product_id')
+                    total_price_item = product_item.get('total_price')
+
+                    cart = models.Cart.objects.get(pk=cart_id)
+
+                    product = cart.product
+
+                    total_price += total_price_item
+
+                    onroad_item = models.OnRoad(
+                        product=product,
+                        bank_card=bank_card,
+                        delivery_point=delivery_point,
+                        totalPrice=total_price_item
+                    )
+                    onroad_items.append(onroad_item)
+
+                    cart_ids_to_delete.append(cart_id)
+
+                models.OnRoad.objects.bulk_create(onroad_items)
+
+                models.Cart.objects.filter(pk__in=cart_ids_to_delete).delete()
+
+            return Response({'message': 'Products added to OnRoad and removed from Cart'}, status=status.HTTP_200_OK)
+        except models.Cart.DoesNotExist:
+            return Response({'error': 'One or more Cart items not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        

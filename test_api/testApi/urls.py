@@ -15,6 +15,12 @@ router.register(r'add_bank_card', views.AddBankCardViewSet)
 router.register(r'^products/(?P<start_limit>\d+)/(?P<count>\d+)', views.ProductViewSet)
 
 router.register(r'cart_products', views.CartProductViewsSet)
+router.register(r'get_current_point', views.CurrentDeliveryPointViewsSet)
+router.register(r'get_current_card', views.CurrentBankCardViewsSet)
+
+
+
+
 
 
 

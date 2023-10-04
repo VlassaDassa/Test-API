@@ -44,6 +44,7 @@ class DeliveryPoints(models.Model):
     rating = models.IntegerField(blank=False)
     coord_x = models.FloatField(blank=False)
     coord_y = models.FloatField(blank=False)
+    seleceted = models.BooleanField(default=False)
     
     def __str__(self):
         return self.address
@@ -61,12 +62,22 @@ class BankCards(models.Model):
     
     
 class Cart(models.Model):
-    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='cart_subcategory')
-    name = models.CharField(max_length=100, blank=False)
-    product_photo = models.ImageField(upload_to='images/product_photo')
-    price = models.IntegerField(blank=False)
-    count = models.IntegerField(blank=False, default=0)
-    isChecked = models.BooleanField(blank=False, default=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(default = 0)
+    isChecked = models.BooleanField(default = False)
+    totalCount = models.IntegerField(default = 15)
+
+    def __str__(self):
+        return str(self.product.name)
+    
+    
+class OnRoad(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    bank_card = models.ForeignKey(BankCards, on_delete=models.CASCADE)
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE)
+    totalPrice = models.IntegerField(default=0)
     
     def __str__(self):
-        return self.name
+        return str(self.product.name)
+    
+    
