@@ -44,15 +44,11 @@ class DeliveryPoints(models.Model):
     rating = models.IntegerField(blank=False)
     coord_x = models.FloatField(blank=False)
     coord_y = models.FloatField(blank=False)
+    seleceted = models.BooleanField(default=False)
     
     def __str__(self):
         return self.address
     
-    
-    
-class AndreyDelivey(models.Model):
-    photo = models.ImageField(upload_to='images/andreyphoto')
-   
    
 class BankCards(models.Model):
     card_number = models.IntegerField(blank=False)
@@ -67,6 +63,26 @@ class BankCards(models.Model):
 
 class DeliverySlider(models.Model):
     photo = models.ImageField(upload_to='images/deliveryslider')
+
+
     
+class Cart(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(default = 0)
+    isChecked = models.BooleanField(default = False)
+    totalCount = models.IntegerField(default = 15)
 
-
+    def __str__(self):
+        return str(self.product.name)
+    
+    
+class OnRoad(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    bank_card = models.ForeignKey(BankCards, on_delete=models.CASCADE)
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE)
+    totalPrice = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return str(self.product.name)
+    
+    
