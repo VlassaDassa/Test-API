@@ -1,4 +1,5 @@
 from django.db import models
+from smart_selects.db_fields import ChainedForeignKey
 
 
 
@@ -25,15 +26,47 @@ class SliderPhoto(models.Model):
     
     
 class Product(models.Model):
-    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='subcategory')
     name = models.CharField(max_length=100, blank=False)
     product_photo = models.ImageField(upload_to='images/product_photo')
     price = models.IntegerField(blank=False)
     rating = models.IntegerField(blank=False)
     count_feedbacks = models.IntegerField(blank=False)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='subcategory')
     
     def __str__(self):
         return self.name
+    
+
+class ColorModel(models.Model):
+    color = models.CharField(max_length=50, null=False, blank=False)
+    color_value = models.CharField(max_length=50, null=False, blank=False)
+    
+    def __str__(self):
+        return str(self.color)
+    
+
+class SizeModel(models.Model):
+    size = models.CharField(max_length=50, null=False, blank=False)
+    size_value = models.CharField(max_length=50, null=False, blank=False)
+    
+    def __str__(self):
+        return str(self.size)
+    
+    
+class ProductCharacteristics(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subcategory = ChainedForeignKey(
+        Subcategory,
+        chained_field="category",
+        chained_model_field="category", 
+    )
+    
+    color = models.BooleanField(default=False)
+    size = models.BooleanField(default=False)
+    fields = models.JSONField()
+    
+    def __str__(self):
+        return str(self.subcategory.subcategory_name)
     
     
 class DeliveryPoints(models.Model):
@@ -85,4 +118,7 @@ class OnRoad(models.Model):
     def __str__(self):
         return str(self.product.name)
     
-    
+
+
+
+

@@ -15,3 +15,8 @@ admin.site.register(models.Cart)
 admin.site.register(models.OnRoad)
 admin.site.register(models.DeliverySlider)
 
+admin.site.register(models.ColorModel)
+admin.site.register(models.SizeModel)
+admin.site.register(models.ProductCharacteristics)
+
+

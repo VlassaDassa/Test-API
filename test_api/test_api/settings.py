@@ -18,6 +18,8 @@ INSTALLED_APPS = [
     'testApi',
     'rest_framework',
     'corsheaders',
+    
+    'smart_selects',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +55,8 @@ TEMPLATES = [
         },
     },
 ]
+
+USE_DJANGO_JQUERY = True
 
 WSGI_APPLICATION = 'test_api.wsgi.application'
 
