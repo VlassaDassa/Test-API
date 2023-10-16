@@ -32,6 +32,7 @@ class Product(models.Model):
     rating = models.IntegerField(blank=False)
     count_feedbacks = models.IntegerField(blank=False)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='subcategory')
+    characteristics = models.JSONField(blank=True, null=True)
     
     def __str__(self):
         return self.name
@@ -54,11 +55,11 @@ class SizeModel(models.Model):
     
     
 class ProductCharacteristics(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     subcategory = ChainedForeignKey(
         Subcategory,
         chained_field="category",
-        chained_model_field="category", 
+        chained_model_field="category",
     )
     
     color = models.BooleanField(default=False)
@@ -66,7 +67,10 @@ class ProductCharacteristics(models.Model):
     fields = models.JSONField()
     
     def __str__(self):
-        return str(self.subcategory.subcategory_name)
+        return str(self.subcategory.subcategory_name) if self.subcategory else str(self.category.category_name)
+    
+    class Meta:
+        unique_together = ('category', 'subcategory')
     
     
 class DeliveryPoints(models.Model):

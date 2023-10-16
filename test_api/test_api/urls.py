@@ -21,6 +21,8 @@ urlpatterns = [
     path('api/add_cart_product/<int:pk>/', views.add_product_to_cart, name='add-cart-product'),
     path('api/add_to_on_road/', views.add_product_to_onroad, name='add-to-on-road'),
     
+    path('api/cat_with_sub/', views.get_categories_with_subcategories, name='cat-with-sub'),
+    
 ]
 
 

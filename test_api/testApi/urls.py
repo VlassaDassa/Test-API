@@ -19,6 +19,8 @@ router.register(r'cart_products', views.CartProductViewsSet)
 router.register(r'get_current_point', views.CurrentDeliveryPointViewsSet)
 router.register(r'get_current_card', views.CurrentBankCardViewsSet)
 
+router.register(r'get_characteristics_fields/(?P<id>\d+)', views.CharacteristicsFieldsViewsSet)
+
 
 
 

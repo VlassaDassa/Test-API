@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from django.db import transaction
 from rest_framework.response import Response
@@ -13,6 +14,32 @@ import time
 class CategoryViewsSet(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
+    
+    
+# Get categories and relate subcategories
+def get_categories_with_subcategories(request):
+    categories = models.Category.objects.prefetch_related('subcategories').all()
+    result_data = []
+
+    for category in categories:
+        category_data = serializers.CategorySerializer(category).data
+
+        formatted_subcategories = []
+
+        for subcategory in category.subcategories.all():
+            subcategory_data = serializers.SubcategorySerializer(subcategory).data
+            formatted_subcategories.append({
+                'subcategory_id': subcategory_data['id'],
+                'subcategory_name': subcategory_data['subcategory_name']
+            })
+
+        result_data.append({
+            'category_id': category_data['id'],
+            'category_name': category_data['category_name'],
+            'subcategory': formatted_subcategories
+        })
+
+    return JsonResponse(result_data, safe=False)
     
 
 # Adding bank card
@@ -236,3 +263,13 @@ def add_product_to_onroad(request):
             return Response({'error': 'One or more Cart items not found'}, status=status.HTTP_404_NOT_FOUND)
 
         
+# Receiving characteristics fields
+class CharacteristicsFieldsViewsSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ProductCharacteristicsSerializer
+    queryset = models.ProductCharacteristics.objects.all()
+    
+    def get_queryset(self):
+        subcategory__id = self.kwargs['id']
+        print('FFF: ', subcategory__id)
+        return models.ProductCharacteristics.objects.filter(subcategory__id=subcategory__id)
+        # return models.ProductCharacteristics.objects.all()

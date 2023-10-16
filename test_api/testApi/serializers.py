@@ -26,6 +26,12 @@ class SubcategorySerializer(serializers.ModelSerializer):
         model = models.Subcategory
         fields = '__all__'
         
+
+class ProductCharacteristicsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductCharacteristics
+        fields = '__all__'
+        
         
 class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.subcategory_name', read_only=True)
