@@ -97,3 +97,13 @@ class OnRoadSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ColorModel
+        fields = '__all__'
+
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SizeModel
+        fields = '__all__'

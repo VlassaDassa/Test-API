@@ -270,6 +270,16 @@ class CharacteristicsFieldsViewsSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         subcategory__id = self.kwargs['id']
-        print('FFF: ', subcategory__id)
         return models.ProductCharacteristics.objects.filter(subcategory__id=subcategory__id)
-        # return models.ProductCharacteristics.objects.all()
+
+
+# Receiving all colors
+class ColorViewsSet(viewsets.ModelViewSet):
+    queryset = models.ColorModel.objects.all()
+    serializer_class = serializers.ColorSerializer
+    
+    
+# Receiving all sizes
+class SizeViewsSet(viewsets.ModelViewSet):
+    queryset = models.SizeModel.objects.all()
+    serializer_class = serializers.SizeSerializer
