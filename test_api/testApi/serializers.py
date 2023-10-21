@@ -33,18 +33,30 @@ class ProductCharacteristicsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
+class ProductPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductPhoto
+        fields = '__all__'
+        
+        
 class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.subcategory_name', read_only=True)
-    is_in_cart = serializers.SerializerMethodField()  
+    is_in_cart = serializers.SerializerMethodField()
+    product_photo = ProductPhotoSerializer(many=True) 
 
     class Meta:
         model = models.Product
-        fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']  # Включаем is_in_cart в список полей
+        fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']
 
     def get_is_in_cart(self, obj):
         cart_exists = models.Cart.objects.filter(product=obj).exists()
         return cart_exists
         
+        
+class AddProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = '__all__'
 
         
 class SliderPhotoSerializer(serializers.ModelSerializer):

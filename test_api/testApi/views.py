@@ -7,7 +7,8 @@ from . import models
 from . import serializers
 import time
 
-
+from django.core.files.base import ContentFile
+from base64 import b64decode
 
 
 # Receiving all categories
@@ -108,17 +109,19 @@ class AllProductViewsSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
-    
+    basename = 'product'
+
     def get_queryset(self):
         start_index = int(self.kwargs['start_limit'])
         count = int(self.kwargs['count'])
-        products = self.queryset[start_index:count]
+        queryset = models.Product.objects.all()
+        products = queryset[start_index:count]
         return products
         
     def list(self, request, *args, **kwargs):
         products = self.get_queryset()
         serializer = self.get_serializer(products, many=True)
-        count_products = len(self.queryset)
+        count_products = len(products)
         
         response_data = {
             'count_products': count_products,
@@ -126,6 +129,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         }
         
         return Response(response_data)
+
+
    
     
 
@@ -139,7 +144,7 @@ class SubCategoryViewsSet(viewsets.ModelViewSet):
         return models.Subcategory.objects.filter(category__id = category_id)
 
     
-# Receiving all slider photos
+# Receiving all slider photos for index
 class SliderPhotoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.SliderPhoto.objects.all()
     serializer_class = serializers.SliderPhotoSerializer
@@ -153,6 +158,7 @@ class SliderPhotoViewSet(viewsets.ReadOnlyModelViewSet):
         return response
     
     
+# Get photos for delivery slider
 class DeliverySliderViewsSet(viewsets.ModelViewSet):
     queryset = models.DeliverySlider.objects.all()
     serializer_class = serializers.DeliverySliderSerializer
@@ -283,3 +289,31 @@ class ColorViewsSet(viewsets.ModelViewSet):
 class SizeViewsSet(viewsets.ModelViewSet):
     queryset = models.SizeModel.objects.all()
     serializer_class = serializers.SizeSerializer
+    
+
+@api_view(['POST'])
+def add_product(request):
+    name = request.data.get('name')
+    price = int(request.data.get('price'))
+    count = int(request.data.get('count'))
+    subcategory = int(request.data.get('subcategory'))
+    characteristics = request.data.get('characteristics')
+    description = request.data.get('description')
+
+    # Создаем объект Product
+    product = models.Product.objects.create(
+        name=name,
+        price=price,
+        count=count,
+        subcategory_id=subcategory,
+        characteristics=characteristics,
+        description=description
+    )
+
+    # Обработка фотографий и создание объектов ProductPhoto
+    product_photos = request.FILES.getlist('product_photo')
+    for photo in product_photos:
+        product_photo = models.ProductPhoto.objects.create(photo=photo)
+        product.product_photo.add(product_photo)
+
+    return Response({'message': 'Success!'}, status=200)

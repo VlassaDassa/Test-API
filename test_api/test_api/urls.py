@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/add_to_on_road/', views.add_product_to_onroad, name='add-to-on-road'),
     
     path('api/cat_with_sub/', views.get_categories_with_subcategories, name='cat-with-sub'),
+    path('api/add_product/', views.add_product, name='add-product'),
     
 ]
 

@@ -25,14 +25,20 @@ class SliderPhoto(models.Model):
     small_photo = models.ImageField(upload_to='images/slider')
     
     
+class ProductPhoto(models.Model):
+    photo = models.ImageField(upload_to="images/product_photo", blank=False)
+    
+    
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
-    product_photo = models.ImageField(upload_to='images/product_photo')
+    product_photo = models.ManyToManyField(ProductPhoto)
     price = models.IntegerField(blank=False)
-    rating = models.IntegerField(blank=False)
-    count_feedbacks = models.IntegerField(blank=False)
+    rating = models.IntegerField(blank=False, default=0)
+    count_feedbacks = models.IntegerField(blank=False, default=0)
+    count = models.IntegerField(blank=False, null=False, default=0)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE, related_name='subcategory')
     characteristics = models.JSONField(blank=True, null=True)
+    description = models.TextField(max_length=1000, blank=False, default='')
     
     def __str__(self):
         return self.name
