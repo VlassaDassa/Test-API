@@ -31,6 +31,7 @@ class ProductPhoto(models.Model):
     
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    main_photo = models.ImageField(upload_to='images/product_photo', blank=False)
     product_photo = models.ManyToManyField(ProductPhoto)
     price = models.IntegerField(blank=False)
     rating = models.IntegerField(blank=False, default=0)

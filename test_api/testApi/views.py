@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from . import models
 from . import serializers
-import time
+import json
 
 from django.core.files.base import ContentFile
 from base64 import b64decode
@@ -299,15 +299,17 @@ def add_product(request):
     subcategory = int(request.data.get('subcategory'))
     characteristics = request.data.get('characteristics')
     description = request.data.get('description')
-
+    
+    
     # Создаем объект Product
     product = models.Product.objects.create(
         name=name,
         price=price,
         count=count,
         subcategory_id=subcategory,
-        characteristics=characteristics,
-        description=description
+        characteristics=json.loads(characteristics),
+        description=description,
+        main_photo=request.FILES['mainPhoto'],
     )
 
     # Обработка фотографий и создание объектов ProductPhoto
@@ -315,5 +317,6 @@ def add_product(request):
     for photo in product_photos:
         product_photo = models.ProductPhoto.objects.create(photo=photo)
         product.product_photo.add(product_photo)
+    
 
     return Response({'message': 'Success!'}, status=200)
