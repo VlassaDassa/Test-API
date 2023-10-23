@@ -121,7 +121,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         products = self.get_queryset()
         serializer = self.get_serializer(products, many=True)
-        count_products = len(products)
+        count_products = len(self.queryset)
         
         response_data = {
             'count_products': count_products,
