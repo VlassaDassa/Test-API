@@ -6,9 +6,9 @@ from rest_framework.decorators import api_view
 from . import models
 from . import serializers
 import json
+from django.db.models import Prefetch, OuterRef, Subquery
 
-from django.core.files.base import ContentFile
-from base64 import b64decode
+
 
 
 # Receiving all categories
@@ -301,7 +301,7 @@ def add_product(request):
     description = request.data.get('description')
     
     
-    # Создаем объект Product
+    # Creating object of Product
     product = models.Product.objects.create(
         name=name,
         price=price,
@@ -312,7 +312,7 @@ def add_product(request):
         main_photo=request.FILES['mainPhoto'],
     )
 
-    # Обработка фотографий и создание объектов ProductPhoto
+    # Handling photos and creating objects ProductPhoto
     product_photos = request.FILES.getlist('product_photo')
     for photo in product_photos:
         product_photo = models.ProductPhoto.objects.create(photo=photo)
@@ -320,3 +320,16 @@ def add_product(request):
     
 
     return Response({'message': 'Success!'}, status=200)
+
+
+# Receiving all data for particular delivery point
+class ParticularDeliveryPoint(viewsets.ModelViewSet):
+    queryset = models.DeliveryPoints.objects.all()
+    serializer_class = serializers.DeliveryPointSerializer
+    
+    def get_queryset(self):
+        delivery_point_id = self.kwargs['id']
+        delivery_point_data = self.queryset.filter(id=delivery_point_id)
+        
+        return delivery_point_data
+    

@@ -15,7 +15,31 @@ class BankCardsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
+
+        
+        
+class DeliveryPointCommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DeliveryPointComments
+        fields = '__all__'
+        
+        
+class MyDeliveryPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.MyDeliveryPoint
+        fields = '__all__'
+
+
+class DeliveryPointPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DeliveryPointPhoto
+        fields = '__all__'
+        
+        
 class DeliveryPointSerializer(serializers.ModelSerializer):
+    photos = DeliveryPointPhotoSerializer(many=True, read_only=True)
+    comments = DeliveryPointCommentsSerializer(many=True, read_only=True, source='deliverypointcomments_set')
+    
     class Meta:
         model = models.DeliveryPoints
         fields = '__all__'

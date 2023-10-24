@@ -23,6 +23,8 @@ router.register(r'get_characteristics_fields/(?P<id>\d+)', views.Characteristics
 router.register(r'get_colors', views.ColorViewsSet)
 router.register(r'get_sizes', views.SizeViewsSet)
 
+router.register(r'get_delivery_point/(?P<id>\d+)', views.ParticularDeliveryPoint)
+
 
 
 

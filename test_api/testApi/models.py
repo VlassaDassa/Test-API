@@ -1,5 +1,6 @@
 from django.db import models
 from smart_selects.db_fields import ChainedForeignKey
+from django.utils import timezone
 
 
 
@@ -80,8 +81,13 @@ class ProductCharacteristics(models.Model):
         unique_together = ('category', 'subcategory')
     
     
+class DeliveryPointPhoto(models.Model):
+    photo = models.ImageField(upload_to="images/delivery_point", blank=False)
+    
+    
 class DeliveryPoints(models.Model):
-    photo = models.ImageField(upload_to='images/delivery_point')
+    main_photo = models.ImageField(upload_to='images/delivery_point')
+    photos = models.ManyToManyField(DeliveryPointPhoto)
     city = models.CharField(max_length=50, blank=False)
     address = models.CharField(max_length=50, blank=False)
     schedule = models.CharField(max_length=50, blank=False)
@@ -93,6 +99,21 @@ class DeliveryPoints(models.Model):
     def __str__(self):
         return self.address
     
+    
+class DeliveryPointComments(models.Model):
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.PROTECT, blank=False, null=False)
+    username = models.CharField(max_length=50, blank=False, null=False)
+    date = models.DateField(default=timezone.now)
+    rating = models.IntegerField(default=0, blank=False, null=False)
+    content = models.TextField(max_length=300, blank=False, null=False)
+    
+    def __str__(self):
+        return self.username + ' | ' + self.delivery_point.address
+    
+   
+class MyDeliveryPoint(models.Model):
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.PROTECT, blank=False, null=False) 
+
    
 class BankCards(models.Model):
     card_number = models.IntegerField(blank=False)

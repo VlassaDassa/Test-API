@@ -20,4 +20,8 @@ admin.site.register(models.SizeModel)
 admin.site.register(models.ProductCharacteristics)
 admin.site.register(models.ProductPhoto)
 
+admin.site.register(models.DeliveryPointComments)
+admin.site.register(models.DeliveryPointPhoto)
+admin.site.register(models.MyDeliveryPoint)
+
 
