@@ -23,7 +23,8 @@ urlpatterns = [
     
     path('api/cat_with_sub/', views.get_categories_with_subcategories, name='cat-with-sub'),
     path('api/add_product/', views.add_product, name='add-product'),
-    
+    path('api/status_delivery_point/<int:id>/', views.status_delivery_point, name='status-delivery-point'),
+    path('api/choice_delivery_point/<int:id>/', views.choice_delivery_point, name='choice-delivery-point'),
 ]
 
 

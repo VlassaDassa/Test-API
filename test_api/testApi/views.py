@@ -210,8 +210,8 @@ def add_product_to_cart(request, pk):
     
 # Getting current delivery point
 class CurrentDeliveryPointViewsSet(viewsets.ModelViewSet):
-    serializer_class = serializers.DeliveryPointSerializer
-    queryset = models.DeliveryPoints.objects.filter(seleceted=True)
+    serializer_class = serializers.MyDeliveryPointSerializer
+    queryset = models.MyDeliveryPoint.objects.all()
     
     
 # Getting current bank card
@@ -333,3 +333,33 @@ class ParticularDeliveryPoint(viewsets.ModelViewSet):
         
         return delivery_point_data
     
+    
+# Receiving status delivery point
+@api_view(['GET'])
+def status_delivery_point(request, id):
+    delivery_point_status = models.MyDeliveryPoint.objects.filter(delivery_point__id=id).exists()
+
+    if delivery_point_status:
+        return Response({'exists': True}, status=200)
+    else:
+        return Response({'exists': False}, status=200)
+    
+
+# Choice delivery point
+@api_view(['PUT'])
+def choice_delivery_point(request, id):
+    try:
+        # Clear old
+        models.MyDeliveryPoint.objects.all().delete()
+        models.MyDeliveryPoint.objects.create(delivery_point_id=id)
+        
+        return Response({'Message': 'Success!'}, status=200)
+        
+    except Exception as e:
+        return Response({'Error': e}, status=404)
+    
+
+    
+    
+   
+            

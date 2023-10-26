@@ -94,7 +94,6 @@ class DeliveryPoints(models.Model):
     rating = models.IntegerField(blank=False)
     coord_x = models.FloatField(blank=False)
     coord_y = models.FloatField(blank=False)
-    seleceted = models.BooleanField(default=False)
     
     def __str__(self):
         return self.address
@@ -113,6 +112,9 @@ class DeliveryPointComments(models.Model):
    
 class MyDeliveryPoint(models.Model):
     delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.PROTECT, blank=False, null=False) 
+    
+    def __str__(self):
+        return self.delivery_point.address
 
    
 class BankCards(models.Model):

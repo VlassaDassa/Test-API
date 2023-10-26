@@ -143,3 +143,18 @@ class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SizeModel
         fields = '__all__'
+        
+        
+class MyDeliveryPointSerializer(serializers.ModelSerializer):
+    main_photo = serializers.ImageField(source='delivery_point.main_photo')
+    city = serializers.CharField(source='delivery_point.city')
+    address = serializers.CharField(source='delivery_point.address')
+    schedule = serializers.CharField(source='delivery_point.schedule')
+    rating = serializers.IntegerField(source='delivery_point.rating')
+    coord_x = serializers.FloatField(source='delivery_point.coord_x')
+    coord_y = serializers.FloatField(source='delivery_point.coord_y')
+    delivery_point_id = serializers.IntegerField(source='delivery_point.id')
+
+    class Meta:
+        model = models.MyDeliveryPoint
+        fields = '__all__'
