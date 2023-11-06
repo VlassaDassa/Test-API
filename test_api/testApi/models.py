@@ -19,13 +19,13 @@ class Subcategory(models.Model):
     def __str__(self):
         return self.subcategory_name
     
-    
+  
 class SliderPhoto(models.Model):
     big_photo = models.ImageField(upload_to='images/slider')
     medium_photo = models.ImageField(upload_to='images/slider')
     small_photo = models.ImageField(upload_to='images/slider')
-    
-    
+        
+  
 class ProductPhoto(models.Model):
     photo = models.ImageField(upload_to="images/product_photo", blank=False)
     
@@ -61,7 +61,7 @@ class SizeModel(models.Model):
     def __str__(self):
         return str(self.size)
     
-    
+
 class ProductCharacteristics(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     subcategory = ChainedForeignKey(

@@ -357,7 +357,7 @@ def choice_delivery_point(request, id):
         
     except Exception as e:
         return Response({'Error': e}, status=404)
-    
+   
 
     
     
