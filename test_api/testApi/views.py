@@ -357,7 +357,36 @@ def choice_delivery_point(request, id):
         
     except Exception as e:
         return Response({'Error': e}, status=404)
-   
+    
+    
+# Get relate inputs
+@api_view(['GET'])
+def get_relate_inputs(request, id):
+    product = models.Product.objects.get(id=id)
+    
+    found_keys = [key for key in product.characteristics if key.startswith('relateInput')]
+    
+    if (found_keys):
+        return JsonResponse({
+            'exists': True,
+            'relateInputs': [product.characteristics[key] for key in found_keys]
+        })
+        
+    else:
+        return JsonResponse({'exists': False})
+    
+
+# Get sizes
+@api_view(['GET'])
+def get_sizes(request, params):
+    sizes = models.SizeModel.objects.filter(id__in=params.split('/'))
+    
+    if sizes:
+        serialized_sizes = [{"display_name": size.size, "value": size.size_value} for size in sizes]
+        return JsonResponse(serialized_sizes, safe=False)
+    else:
+        return Response({'Error': 'not found'}, status=404)
+    
 
     
     
