@@ -124,7 +124,7 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cart
-        fields = ['id', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
+        fields = ['id', 'color', 'size', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
         
         
 class OnRoadSerializer(serializers.ModelSerializer):

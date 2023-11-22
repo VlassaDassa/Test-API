@@ -136,6 +136,8 @@ class DeliverySlider(models.Model):
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(default = 0)
+    color = models.ForeignKey(ColorModel, on_delete=models.CASCADE, default=None, blank=True, null=True)
+    size = models.ForeignKey(SizeModel, on_delete=models.CASCADE, default=None, blank=True, null=True)
     isChecked = models.BooleanField(default = False)
     totalCount = models.IntegerField(default = 15)
 
