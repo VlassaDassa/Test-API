@@ -7,6 +7,7 @@ from . import models
 from . import serializers
 import json
 from django.db.models import Prefetch, OuterRef, Subquery
+from django.shortcuts import get_object_or_404
 
 
 
@@ -191,21 +192,41 @@ def delete_cart_product_from_prod_id(request, pk):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
-# Adding cart product
+
 @api_view(['POST'])
-def add_product_to_cart(request, pk):
-    if request.method == 'POST':
-        product_id = pk
-
-        try:
-            product = models.Product.objects.get(pk=product_id)
-        except models.Product.DoesNotExist:
-            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        cart_item, created = models.Cart.objects.get_or_create(product=product)
-        serializer = serializers.CartProductSerializer(cart_item)
+def add_product_to_cart(request):
+    
+    product_id = request.data.get('product_id')
+    count = request.data.get('count')
+    get_color = request.data.get('color', {}).get('selectColor')
+    get_size = request.data.get('size', {}).get('selectSize')
+    relateInputs = request.data.get('relateInputs')
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    try:
+        if get_color:
+            color = get_object_or_404(models.ColorModel, color_value=get_color)
+        else:
+            color = get_color
+            
+        if get_size:
+            size = get_object_or_404(models.SizeModel, size_value=get_size)
+        else:
+            size = get_size
+            
+        if relateInputs:
+            color = get_object_or_404(models.ColorModel, color_value=relateInputs.get('color'))
+            size = get_object_or_404(models.SizeModel, size_value=relateInputs.get('size'))
+            
+        
+        product = get_object_or_404(models.Product, id=int(product_id))
+        models.Cart.objects.create(product=product, count=int(count), color=color, size=size)
+    except Exception as ex:
+        print(ex)
+        return Response({'error': 'error'}, status=status.HTTP_404_NOT_FOUND)
+        
+    return Response({'message': 'Success!'}, status=200)
+    
+    
     
     
 # Getting current delivery point
@@ -390,6 +411,9 @@ def get_sizes_and_colors(request, id):
         send_data['exists'] = True
         send_data['exists_colors'] = True
         send_data['colors'] = product.characteristics['color']
+        
+    else:
+        send_data['count'] = product.count
     
     
     return JsonResponse(send_data)
@@ -406,6 +430,11 @@ def get_sizes(request, params):
         return JsonResponse(serialized_sizes, safe=False)
     else:
         return Response({'Error': 'not found'}, status=404)
+    
+    
+
+    
+
     
 
     

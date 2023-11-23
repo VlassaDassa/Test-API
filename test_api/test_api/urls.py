@@ -18,7 +18,7 @@ urlpatterns = [
     
     path('api/delete_cart_product/<int:pk>/', views.delete_cart_product, name='delete-cart-product'),
     path('api/delete_cart_product_from_prod_id/<int:pk>/', views.delete_cart_product_from_prod_id, name='delete-cart-product'),
-    path('api/add_cart_product/<int:pk>/', views.add_product_to_cart, name='add-cart-product'),
+    path('api/add_cart_product/', views.add_product_to_cart, name='add-cart-product'),
     path('api/add_to_on_road/', views.add_product_to_onroad, name='add-to-on-road'),
     
     path('api/cat_with_sub/', views.get_categories_with_subcategories, name='cat-with-sub'),
