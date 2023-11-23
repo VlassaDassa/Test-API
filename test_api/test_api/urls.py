@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/status_delivery_point/<int:id>/', views.status_delivery_point, name='status-delivery-point'),
     path('api/choice_delivery_point/<int:id>/', views.choice_delivery_point, name='choice-delivery-point'),
     
-    path('api/get_relate_inputs/<int:id>/', views.get_relate_inputs, name='get-relate-inputs'),
+    path('api/get_sizes_and_colors/<int:id>/', views.get_sizes_and_colors, name='get-sizes-and-colors'),
     path('api/get_particular_sizes/<path:params>/', views.get_sizes, name='get-particular-sizes'),
 ]
 

@@ -359,21 +359,41 @@ def choice_delivery_point(request, id):
         return Response({'Error': e}, status=404)
     
     
-# Get relate inputs
+# Getting sizes, colors or relate inputs for product
 @api_view(['GET'])
-def get_relate_inputs(request, id):
+def get_sizes_and_colors(request, id):
     product = models.Product.objects.get(id=id)
     
-    found_keys = [key for key in product.characteristics if key.startswith('relateInput')]
+    exists_relate_inputs = [key for key in product.characteristics if key.startswith('relateInput')]
     
-    if (found_keys):
-        return JsonResponse({
-            'exists': True,
-            'relateInputs': [product.characteristics[key] for key in found_keys]
-        })
+    send_data = {
+        'exists': False,
+        'exists_relateInputs': False,
+        'exists_colors': False,
+        'exists_sizes': False,
+        'relateInputs': [],
+        'colors': [],
+        'sizes': [],
+    }
+    
+    if (exists_relate_inputs):
+        send_data['exists'] = True
+        send_data['exists_relateInputs'] = True
+        send_data['relateInputs'] = [product.characteristics[key] for key in exists_relate_inputs]
         
-    else:
-        return JsonResponse({'exists': False})
+    elif (product.characteristics.get('size')):
+        send_data['exists'] = True
+        send_data['exists_sizes'] = True
+        send_data['sizes'] = product.characteristics['size']
+        
+    elif (product.characteristics.get('color')):
+        send_data['exists'] = True
+        send_data['exists_colors'] = True
+        send_data['colors'] = product.characteristics['color']
+    
+    
+    return JsonResponse(send_data)
+    
     
 
 # Get sizes
