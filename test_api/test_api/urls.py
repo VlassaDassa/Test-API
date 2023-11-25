@@ -28,6 +28,8 @@ urlpatterns = [
     
     path('api/get_sizes_and_colors/<int:id>/', views.get_sizes_and_colors, name='get-sizes-and-colors'),
     path('api/get_particular_sizes/<path:params>/', views.get_sizes, name='get-particular-sizes'),
+    
+    path('api/add_delivery_point_comment/', views.add_delivery_point_comment, name='add-delivery-point-comment')
 ]
 
 

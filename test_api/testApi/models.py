@@ -91,7 +91,7 @@ class DeliveryPoints(models.Model):
     city = models.CharField(max_length=50, blank=False)
     address = models.CharField(max_length=50, blank=False)
     schedule = models.CharField(max_length=50, blank=False)
-    rating = models.IntegerField(blank=False)
+    rating = models.IntegerField(blank=False, default=0)
     coord_x = models.FloatField(blank=False)
     coord_y = models.FloatField(blank=False)
     

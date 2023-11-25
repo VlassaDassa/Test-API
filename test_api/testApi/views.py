@@ -433,6 +433,43 @@ def get_sizes(request, params):
     
     
 
+# Add delivery point comment
+@api_view(['POST'])
+def add_delivery_point_comment(request):
+    username = request.data.get('username')
+    rating = request.data.get('rating')
+    content = request.data.get('content')
+    delivery_point_id = request.data.get('deliveryPointId')
+    
+    try:    
+        # Creating comment
+        delivery_point = get_object_or_404(models.DeliveryPoints, id=int(delivery_point_id))
+        
+        models.DeliveryPointComments.objects.create(
+            delivery_point = delivery_point,
+            username = username,
+            rating = rating,
+            content = content
+        )
+        
+        # Calculating rating
+        all_comments = models.DeliveryPointComments.objects.filter(delivery_point=delivery_point)
+        new_rating = 0
+        for i in all_comments:
+            new_rating += i.rating
+            
+        delivery_point.rating = new_rating/len(all_comments)
+        delivery_point.save()
+            
+        
+        
+    except Exception as ex:
+        print(ex)
+        return Response({'Error': 'error'}, status=404)
+    
+    
+    return Response({'Success': 'success!'}, status=200)
+
     
 
     
