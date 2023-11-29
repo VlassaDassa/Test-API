@@ -13,8 +13,6 @@ class BankCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BankCards
         fields = '__all__'
-        
-        
 
         
         
@@ -121,10 +119,13 @@ class CartProductSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(source='product.rating')
     count_feedbacks = serializers.IntegerField(source='product.count_feedbacks')
     main_photo = serializers.ImageField(source='product.main_photo')
+    size_value = serializers.CharField(source='size.size', allow_null=True, required=False)
+    color_value = serializers.CharField(source='color.color_value', allow_null=True, required=False)
+    
 
     class Meta:
         model = models.Cart
-        fields = ['id', 'color', 'size', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
+        fields = ['id', 'color_value', 'size_value', 'size', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
         
         
 class OnRoadSerializer(serializers.ModelSerializer):
