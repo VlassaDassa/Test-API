@@ -113,6 +113,7 @@ class DeliverySliderSerializer(serializers.ModelSerializer):
         
         
 class CartProductSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField(source="product.id")
     subcategory = serializers.CharField(source='product.subcategory.subcategory_name')
     name = serializers.CharField(source='product.name')
     price = serializers.IntegerField(source='product.price')
@@ -125,7 +126,7 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cart
-        fields = ['id', 'color_value', 'size_value', 'size', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
+        fields = ['id', 'product_id', 'color_value', 'size_value', 'size', 'count', 'totalCount', 'isChecked', 'subcategory', 'name', 'main_photo', 'price', 'rating', 'count_feedbacks']
         
         
 class OnRoadSerializer(serializers.ModelSerializer):
