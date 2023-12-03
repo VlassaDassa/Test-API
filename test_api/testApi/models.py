@@ -149,7 +149,10 @@ class OnRoad(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     bank_card = models.ForeignKey(BankCards, on_delete=models.CASCADE)
     delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE)
+    color = models.ForeignKey(ColorModel, default=None, blank=True, null=True, on_delete=models.CASCADE)
+    size = models.ForeignKey(SizeModel, default=None, blank=True, null=True, on_delete=models.CASCADE)
     totalPrice = models.IntegerField(default=0)
+    totalCount = models.IntegerField(default=0)
     
     def __str__(self):
         return str(self.product.name)

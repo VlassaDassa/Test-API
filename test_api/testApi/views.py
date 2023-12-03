@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.db.models import F
 from rest_framework import viewsets, status
 from django.db import transaction
 from rest_framework.response import Response
@@ -240,6 +241,7 @@ class CurrentBankCardViewsSet(viewsets.ModelViewSet):
     serializer_class = serializers.BankCardsSerializer
     queryset = models.BankCards.objects.filter(main_card=True)
     
+    
 
 # Adding product to "OnRoad" model
 @api_view(['POST'])
@@ -247,44 +249,98 @@ def add_product_to_onroad(request):
     if request.method == 'POST':
         try:
             data = request.data
-            product_items = data.get('products', [])
+            product_items = data.get('prod_data', [])
             bank_card_id = data.get('bank_card_id')
             delivery_point_id = data.get('delivery_point_id')
-
-            bank_card = models.BankCards.objects.get(pk=bank_card_id)
-            delivery_point = models.DeliveryPoints.objects.get(pk=delivery_point_id)
-
-            total_price = 0
-
+            
             onroad_items = []
-
             cart_ids_to_delete = []
+            
+            bank_card = models.BankCards.objects.get(pk=bank_card_id)
+            delivery_point = models.MyDeliveryPoint.objects.get(pk=delivery_point_id).delivery_point
+            
 
             with transaction.atomic():
                 for product_item in product_items:
-                    cart_id = product_item.get('product_id')
+                    cart_id = product_item.get('item_id')
                     total_price_item = product_item.get('total_price')
+                    total_count_item = product_item.get('total_count')
+                    color_val = product_item.get('color')
+                    size_id = product_item.get('size')
 
                     cart = models.Cart.objects.get(pk=cart_id)
-
+                    
+                    color = models.ColorModel.objects.get(color_value=color_val) if color_val else None
+                    size = models.SizeModel.objects.get(pk=size_id) if size_id else None
+                    
                     product = cart.product
-
-                    total_price += total_price_item
 
                     onroad_item = models.OnRoad(
                         product=product,
                         bank_card=bank_card,
                         delivery_point=delivery_point,
-                        totalPrice=total_price_item
+                        totalPrice=total_price_item,
+                        totalCount=total_count_item,
+                        color=color,
+                        size=size
                     )
                     onroad_items.append(onroad_item)
 
                     cart_ids_to_delete.append(cart_id)
+                    
+                    
+                    # Уменьшение количества в модели Products
+                    if color and size:
+                        for key, value in list(product.characteristics.items()):
+                            if key.startswith("relateInput"):
+                                if isinstance(value, dict) and value.get("color") == color_val and value.get("size") == size.size_value:
+                                    count = int(value.get("count", 0))
+                                    count -= int(total_count_item)
+                                    if count <= 0:
+                                        count = 0
+                                        product.characteristics.pop(key, None)
+                                    else:
+                                        value["count"] = str(count)
 
+                                    models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                                    break
+                    
+                    elif color and not size:
+                        for item in product.characteristics.get('color', []):
+                            if item.get('selectColor') == color_val:
+                                count = int(item.get('countColor', 0)) - int(total_count_item)
+
+                                if count <= 0:
+                                    product.characteristics['color'] = [i for i in product.characteristics['color'] if i['selectColor'] != color_val]
+                                    models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                                    print('NULL')
+                                else:
+                                    item['countColor'] = count
+
+                                    models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
+                                break
+                            
+                        
+                    elif size and not color:
+                        for item in product.characteristics.get('size', []):
+                            if item.get('selectSize') == size.size_value:
+                                count = int(item.get('countSize', 0)) - int(total_count_item)
+
+                                if count <= 0:
+                                    product.characteristics['size'] = [i for i in product.characteristics['size'] if i['selectSize'] != size.size_value]
+                                    models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                                    print('NULL')
+                                else:
+                                    item['countSize'] = count
+
+                                    models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
+                                break
+                    
+                    
+                
                 models.OnRoad.objects.bulk_create(onroad_items)
-
                 models.Cart.objects.filter(pk__in=cart_ids_to_delete).delete()
-
+                
             return Response({'message': 'Products added to OnRoad and removed from Cart'}, status=status.HTTP_200_OK)
         except models.Cart.DoesNotExist:
             return Response({'error': 'One or more Cart items not found'}, status=status.HTTP_404_NOT_FOUND)
