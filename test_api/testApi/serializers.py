@@ -68,7 +68,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['id', 'subcategory', 'subcategory_name', 'name', 'product_photo', 'characteristics', 'main_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']
+        fields = ['id', 'subcategory', 'count', 'subcategory_name', 'name', 'product_photo', 'characteristics', 'main_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']
 
     def get_is_in_cart(self, obj):
         cart_exists = models.Cart.objects.filter(product=obj).exists()

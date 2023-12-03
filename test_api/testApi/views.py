@@ -302,6 +302,7 @@ def add_product_to_onroad(request):
                                     else:
                                         value["count"] = str(count)
 
+                                    product.characteristics['in_stock'] = False
                                     models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
                                     break
                     
@@ -313,11 +314,11 @@ def add_product_to_onroad(request):
                                 if count <= 0:
                                     product.characteristics['color'] = [i for i in product.characteristics['color'] if i['selectColor'] != color_val]
                                     models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
-                                    print('NULL')
                                 else:
                                     item['countColor'] = count
-
-                                    models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
+                                
+                                product.characteristics['in_stock'] = False
+                                models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
                                 break
                             
                         
@@ -329,12 +330,20 @@ def add_product_to_onroad(request):
                                 if count <= 0:
                                     product.characteristics['size'] = [i for i in product.characteristics['size'] if i['selectSize'] != size.size_value]
                                     models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
-                                    print('NULL')
                                 else:
                                     item['countSize'] = count
-
-                                    models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
+                                
+                                product.characteristics['in_stock'] = False
+                                models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
                                 break
+                            
+                    else:
+                        count = product.count = int(product.count) - int(total_count_item) 
+                        if count <= 0:
+                           product.characteristics['in_stock'] = False
+                        
+                        models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
+                        product.save()
                     
                     
                 
