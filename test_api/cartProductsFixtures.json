@@ -1,69 +1,323 @@
 [
-    {
-      "model": "testApi.Cart",
-      "pk":1,
-      "fields":{
-        "subcategory": 1,
-        "name": "Шерлок",
-        "product_photo": "images/product_photo/book_1.jpg",
-        "price": 234,
-        "count": 0,
-        "isChecked": false
-      }
-    },
-
-    {
-        "model": "testApi.Cart",
-        "pk": 2,
-        "fields":{
-          "subcategory": 2,
-          "name": "Рапунцель",
-          "product_photo": "images/product_photo/book_2.jpg",
-          "price": 544,
-          "count": 0,
-          "isChecked": false
-        }
-    },
-
-    {
-        "model": "testApi.Cart",
-        "pk": 3,
-        "fields":{
-          "subcategory": 2,
-          "name": "Космос",
-          "product_photo": "images/product_photo/book_3.jpg",
-          "price": 621,
-          "count": 0,
-          "isChecked": false
-        }
-    },
-
-    {
-        "model": "testApi.Cart",
-        "pk": 4,
-        "fields":{
-          "subcategory": 2,
-          "name": "Компьютер",
-          "product_photo": "images/product_photo/book_4.jpg",
-          "price": 123,
-          "count": 0,
-          "isChecked": false
-        }
-    },
-
-
-    {
-        "model": "testApi.Cart",
-        "pk": 5,
-        "fields":{
-          "subcategory": 2,
-          "name": "Путь в IT",
-          "product_photo": "images/product_photo/book_5.jpg",
-          "price": 321,
-          "count": 0,
-          "isChecked": false
-        }
+  {
+    "model": "testApi.Product",
+    "pk": 1,
+    "fields": {
+      "name": "Example Product 1",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
     }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 2,
+    "fields": {
+      "name": "Example Product 2",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 3,
+    "fields": {
+      "name": "Example Product 3",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 4,
+    "fields": {
+      "name": "Example Product 4",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 5,
+    "fields": {
+      "name": "Example Product 5",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 6,
+    "fields": {
+      "name": "Example Product 6",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 7,
+    "fields": {
+      "name": "Example Product 7",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 8,
+    "fields": {
+      "name": "Example Product 8",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 9,
+    "fields": {
+      "name": "Example Product 9",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 10,
+    "fields": {
+      "name": "Example Product 10",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 11,
+    "fields": {
+      "name": "Example Product 11",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 12,
+    "fields": {
+      "name": "Example Product 12",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 13,
+    "fields": {
+      "name": "Example Product 13",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 14,
+    "fields": {
+      "name": "Example Product 14",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 15,
+    "fields": {
+      "name": "Example Product 15",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 16,
+    "fields": {
+      "name": "Example Product 16",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 17,
+    "fields": {
+      "name": "Example Product 17",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 18,
+    "fields": {
+      "name": "Example Product 18",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 19,
+    "fields": {
+      "name": "Example Product 19",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  },
+
+  {
+    "model": "testApi.Product",
+    "pk": 20,
+    "fields": {
+      "name": "Example Product 20",
+      "main_photo": "images/product_photo/book_1.jpg",
+      "price": 100,
+      "rating": 4,
+      "count_feedbacks": 20,
+      "count": 50,
+      "subcategory": 29,
+      "characteristics": {"personalChar_type_papper": "123", "personalChar_redaction": "123", "personalChar_cover": "123", "personalChar_genre": "123", "personalChar_author": "123", "personalChar_count_pages": "123", "personalChar_age_rating": "123", "personalChar_packing_height": "123", "personalChar_weight": "123", "personalChar_redacti123on": "123", "personalChar_TEST": "123", "category": 1, "in_stock": true},
+      "description": "This is an example product description."
+    }
+  }
+  
+
 ]
-
-

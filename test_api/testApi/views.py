@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from . import models
 from . import serializers
 import json
-from django.db.models import Prefetch, OuterRef, Subquery
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 
 
@@ -109,21 +109,33 @@ class AllProductViewsSet(viewsets.ModelViewSet):
 
 # Receiving few products
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = models.Product.objects.all()
     serializer_class = serializers.ProductSerializer
-    basename = 'product'
-
+    queryset = models.Product.objects.all()
+    lookup_field = 'id'
+    
     def get_queryset(self):
         start_index = int(self.kwargs['start_limit'])
         count = int(self.kwargs['count'])
-        queryset = models.Product.objects.all()
-        products = queryset[start_index:count]
+        products = models.Product.objects.annotate(row_number=F('id')).order_by('id')[start_index:count]
+
         return products
         
     def list(self, request, *args, **kwargs):
         products = self.get_queryset()
         serializer = self.get_serializer(products, many=True)
-        count_products = len(self.queryset)
+        count_products = models.Product.objects.count()
+        
+        response_data = {
+            'count_products': count_products,
+            'products': serializer.data,
+        }
+        
+        return Response(response_data)
+        
+    def list(self, request, *args, **kwargs):
+        products = self.get_queryset()
+        serializer = self.get_serializer(products, many=True)
+        count_products = models.Product.objects.count()
         
         response_data = {
             'count_products': count_products,
@@ -132,8 +144,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         return Response(response_data)
 
-
-   
     
 
 # Receiving particular subcategory
@@ -289,7 +299,7 @@ def add_product_to_onroad(request):
                     cart_ids_to_delete.append(cart_id)
                     
                     
-                    # Уменьшение количества в модели Products
+                    # Уменьшение количества, обновление состояния "В наличии" в модели Products, в зависимости от категории
                     if color and size:
                         for key, value in list(product.characteristics.items()):
                             if key.startswith("relateInput"):
@@ -301,12 +311,30 @@ def add_product_to_onroad(request):
                                         product.characteristics.pop(key, None)
                                     else:
                                         value["count"] = str(count)
+                        
+                        # Определение наличия товара, если хотя бы 1 count в relateInput != 0             
+                        relate_inputs_count_zero = all(
+                            int(value["count"]) <= 0
+                            for key, value in product.characteristics.items()
+                            if key.startswith("relateInput")
+                        )
 
-                                    product.characteristics['in_stock'] = False
-                                    models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                        for key, value in list(product.characteristics.items()):
+                            if key.startswith("relateInput"):
+                                count = int(value.get("count", 0))
+                                if count > 0:
+                                    relate_inputs_count_zero = False
                                     break
+
+                        if relate_inputs_count_zero:
+                            product.characteristics['in_stock'] = False
+
+                        models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                                    
+
                     
                     elif color and not size:
+                        flag = False
                         for item in product.characteristics.get('color', []):
                             if item.get('selectColor') == color_val:
                                 count = int(item.get('countColor', 0)) - int(total_count_item)
@@ -317,12 +345,18 @@ def add_product_to_onroad(request):
                                 else:
                                     item['countColor'] = count
                                 
-                                product.characteristics['in_stock'] = False
-                                models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
-                                break
+                        # Определение наличия товара, если хотя бы 1 count в relateInput != 0  
+                        for i in product.characteristics.get('color', []):
+                            if int(i['countColor']) > 0:
+                                flag = True
+                                
+                        product.characteristics['in_stock'] = flag
+                        models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
+                                
                             
                         
                     elif size and not color:
+                        flag = False
                         for item in product.characteristics.get('size', []):
                             if item.get('selectSize') == size.size_value:
                                 count = int(item.get('countSize', 0)) - int(total_count_item)
@@ -332,10 +366,15 @@ def add_product_to_onroad(request):
                                     models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
                                 else:
                                     item['countSize'] = count
+                    
+                        # Определение наличия товара, если хотя бы 1 count в relateInput != 0  
+                        for i in product.characteristics.get('size', []):
+                            if int(i['countSize']) > 0:
+                                flag = True
+                                    
+                        product.characteristics['in_stock'] = flag
+                        models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
                                 
-                                product.characteristics['in_stock'] = False
-                                models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
-                                break
                             
                     else:
                         count = product.count = int(product.count) - int(total_count_item) 
