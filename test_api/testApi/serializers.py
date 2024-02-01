@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
 from . import models
 
 
@@ -160,3 +161,20 @@ class MyDeliveryPointSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MyDeliveryPoint
         fields = '__all__'
+
+
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CustomUser
+        fields = ['id', 'username', 'phone_number', 'is_seller', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        try:
+            user = models.CustomUser.objects.create_user(**validated_data)
+            return user
+        except ValidationError as e:
+            raise serializers.ValidationError({'error': str(e)})
+        

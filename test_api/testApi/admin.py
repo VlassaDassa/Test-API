@@ -25,3 +25,4 @@ admin.site.register(models.DeliveryPointPhoto)
 admin.site.register(models.MyDeliveryPoint)
 
 
+admin.site.register(models.CustomUser)

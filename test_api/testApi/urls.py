@@ -29,5 +29,6 @@ router.register(r'get_delivery_point/(?P<id>\d+)', views.ParticularDeliveryPoint
 
 
 
+
 urlpatterns = router.urls
 

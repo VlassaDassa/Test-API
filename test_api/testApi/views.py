@@ -10,6 +10,11 @@ import json
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import CustomUserSerializer
+from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -565,16 +570,106 @@ def add_delivery_point_comment(request):
         delivery_point.rating = new_rating/len(all_comments)
         delivery_point.save()
             
-        
-        
     except Exception as ex:
         print(ex)
         return Response({'Error': 'error'}, status=404)
     
-    
     return Response({'Success': 'success!'}, status=200)
 
     
+
+
+
+class RegistrationAPIView(APIView):
+    def post(self, request):
+        serializer = CustomUserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            refresh = RefreshToken.for_user(user)
+            refresh.payload.update({
+                'user_id': user.id,
+                'username': user.username
+            })
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+
+        errors = serializer.errors
+        response_data = {}
+
+        if 'username' in errors:
+            response_data['error'] = ['Такой логин уже существует']
+
+        if 'phone_number' in errors:
+            response_data['error'] = ['Такой номер уже существует']
+
+
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        
+    
+
+
+class LoginAPIView(APIView):
+    def post(self, request):
+        data = request.data
+        username = data.get('username', None)
+        password = data.get('password', None)
+
+        if username is None or password is None:
+            return Response({'error': 'Нужен и логин, и пароль'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return Response({'error': 'Неверные данные'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+
+        refresh = RefreshToken.for_user(user)
+        refresh.payload.update({
+            'user_id': user.id,
+            'username': user.username
+        })
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)
+
+
+
+class LogoutAPIView(APIView):
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response({'error': 'Необходим Refresh token'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except Exception as e:
+            return Response({'error': 'Неверный Refresh token'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
+    
+
+
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.id
+        print('[FFF]')
+        return Response({'user_id': user_id, 'message': 'Доступ разрешен'})
+
 
     
 

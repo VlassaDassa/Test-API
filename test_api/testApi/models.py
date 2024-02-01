@@ -1,7 +1,7 @@
 from django.db import models
 from smart_selects.db_fields import ChainedForeignKey
 from django.utils import timezone
-
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
 class Category(models.Model):
@@ -156,8 +156,13 @@ class OnRoad(models.Model):
     
     def __str__(self):
         return str(self.product.name)
+
+
+
+class CustomUser(AbstractUser):
+    phone_number = models.CharField(max_length=20, blank=False, null=False, unique=True)
+    is_seller = models.BooleanField(default=False)
+    groups = models.ManyToManyField(Group, related_name='customuser_set', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='customuser_set', blank=True)
+
     
-
-
-
-

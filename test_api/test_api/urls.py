@@ -29,7 +29,13 @@ urlpatterns = [
     path('api/get_sizes_and_colors/<int:id>/', views.get_sizes_and_colors, name='get-sizes-and-colors'),
     path('api/get_particular_sizes/<path:params>/', views.get_sizes, name='get-particular-sizes'),
     
-    path('api/add_delivery_point_comment/', views.add_delivery_point_comment, name='add-delivery-point-comment')
+    path('api/add_delivery_point_comment/', views.add_delivery_point_comment, name='add-delivery-point-comment'),
+
+    path('api/register/', views.RegistrationAPIView.as_view(), name='register'),
+    path('api/login/', views.LoginAPIView.as_view(), name='login'),
+    path('api/logout/', views.LogoutAPIView.as_view(), name='logout'),
+    path('api/test/', views.ProfileView.as_view(), name='testtt'),
+
 ]
 
 
