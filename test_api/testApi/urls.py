@@ -9,15 +9,14 @@ router.register(r'all_products', views.AllProductViewsSet)
 
 router.register(r'all_delivery_points', views.DeliveryPointViewsSet)
 
-router.register(r'all_bank_cards', views.BankCardsViewsSet)
-router.register(r'add_bank_card', views.AddBankCardViewSet)
+router.register(r'get_user_bank_cards/(?P<user_id>\d+)', views.BankCardsViewsSet)
+router.register(r'add_bank_card/(?P<user_id>\d+)', views.AddBankCardViewSet, basename='bankcards')
 
 router.register(r'^products/(?P<start_limit>\d+)/(?P<count>\d+)', views.ProductViewSet)
 router.register(r'^deliveryslider', views.DeliverySliderViewsSet)
 
-router.register(r'cart_products', views.CartProductViewsSet)
-router.register(r'get_current_point', views.CurrentDeliveryPointViewsSet)
-router.register(r'get_current_card', views.CurrentBankCardViewsSet)
+router.register(r'cart_products/(?P<user_id>\d+)', views.CartProductViewsSet)
+router.register(r'get_current_card/(?P<user_id>\d+)', views.CurrentBankCardViewsSet, basename='bankcards')
 
 router.register(r'get_characteristics_fields/(?P<id>\d+)', views.CharacteristicsFieldsViewsSet)
 router.register(r'get_colors', views.ColorViewsSet)

@@ -4,6 +4,36 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
+
+
+
+class DeliveryPointPhoto(models.Model):
+    photo = models.ImageField(upload_to="images/delivery_point", blank=False)
+    
+class DeliveryPoints(models.Model):
+    main_photo = models.ImageField(upload_to='images/delivery_point')
+    photos = models.ManyToManyField(DeliveryPointPhoto)
+    city = models.CharField(max_length=50, blank=False)
+    address = models.CharField(max_length=50, blank=False)
+    schedule = models.CharField(max_length=50, blank=False)
+    rating = models.IntegerField(blank=False, default=0)
+    coord_x = models.FloatField(blank=False)
+    coord_y = models.FloatField(blank=False)
+    
+    def __str__(self):
+        return self.address
+
+
+class CustomUser(AbstractUser):
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE, related_name='user')
+    phone_number = models.CharField(max_length=20, blank=False, null=False, unique=True)
+    is_seller = models.BooleanField(default=False)
+    city = models.CharField(max_length=50, blank=False, null=False, default='Конаково') # default="Конаково" - Временно
+
+    groups = models.ManyToManyField(Group, related_name='customuser_set', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='customuser_set', blank=True)
+
+
 class Category(models.Model):
     icon = models.FileField(upload_to='images/category_icon')
     category_name = models.CharField(max_length=100, unique=True, blank=False)
@@ -81,25 +111,11 @@ class ProductCharacteristics(models.Model):
         unique_together = ('category', 'subcategory')
     
     
-class DeliveryPointPhoto(models.Model):
-    photo = models.ImageField(upload_to="images/delivery_point", blank=False)
-    
-    
-class DeliveryPoints(models.Model):
-    main_photo = models.ImageField(upload_to='images/delivery_point')
-    photos = models.ManyToManyField(DeliveryPointPhoto)
-    city = models.CharField(max_length=50, blank=False)
-    address = models.CharField(max_length=50, blank=False)
-    schedule = models.CharField(max_length=50, blank=False)
-    rating = models.IntegerField(blank=False, default=0)
-    coord_x = models.FloatField(blank=False)
-    coord_y = models.FloatField(blank=False)
-    
-    def __str__(self):
-        return self.address
+
     
     
 class DeliveryPointComments(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.PROTECT, blank=False, null=False)
     username = models.CharField(max_length=50, blank=False, null=False)
     date = models.DateField(default=timezone.now)
@@ -109,20 +125,18 @@ class DeliveryPointComments(models.Model):
     def __str__(self):
         return self.username + ' | ' + self.delivery_point.address
     
-   
-class MyDeliveryPoint(models.Model):
-    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.PROTECT, blank=False, null=False) 
+    class Meta:
+        unique_together = ('user', 'delivery_point')
     
-    def __str__(self):
-        return self.delivery_point.address
-
    
 class BankCards(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     card_number = models.IntegerField(blank=False)
     month = models.IntegerField(blank=False)
     year = models.IntegerField(blank=False)
     main_card = models.BooleanField(blank=False, default=False)
     bank_ico = models.FileField(upload_to='images/bankIcons', default="images/bankIcons/question.svg")
+    base_card = models.BooleanField(default=False)
     
     def __str__(self):
         return str(self.card_number)
@@ -134,6 +148,7 @@ class DeliverySlider(models.Model):
 
     
 class Cart(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(default = 0)
     color = models.ForeignKey(ColorModel, on_delete=models.CASCADE, default=None, blank=True, null=True)
@@ -143,9 +158,10 @@ class Cart(models.Model):
 
     def __str__(self):
         return str(self.product.name)
-    
-    
+
+
 class OnRoad(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     bank_card = models.ForeignKey(BankCards, on_delete=models.CASCADE)
     delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE)
@@ -156,13 +172,17 @@ class OnRoad(models.Model):
     
     def __str__(self):
         return str(self.product.name)
+    
+
+class UserPurchases(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.user.username) + ' ' + str(self.product.name)
 
 
 
-class CustomUser(AbstractUser):
-    phone_number = models.CharField(max_length=20, blank=False, null=False, unique=True)
-    is_seller = models.BooleanField(default=False)
-    groups = models.ManyToManyField(Group, related_name='customuser_set', blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='customuser_set', blank=True)
+
 
     

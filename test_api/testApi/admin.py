@@ -22,7 +22,6 @@ admin.site.register(models.ProductPhoto)
 
 admin.site.register(models.DeliveryPointComments)
 admin.site.register(models.DeliveryPointPhoto)
-admin.site.register(models.MyDeliveryPoint)
-
 
 admin.site.register(models.CustomUser)
+admin.site.register(models.UserPurchases)

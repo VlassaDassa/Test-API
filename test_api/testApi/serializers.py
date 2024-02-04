@@ -23,18 +23,14 @@ class DeliveryPointCommentsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
-class MyDeliveryPointSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.MyDeliveryPoint
-        fields = '__all__'
-
 
 class DeliveryPointPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DeliveryPointPhoto
         fields = '__all__'
         
-        
+
+
 class DeliveryPointSerializer(serializers.ModelSerializer):
     photos = DeliveryPointPhotoSerializer(many=True, read_only=True)
     comments = DeliveryPointCommentsSerializer(many=True, read_only=True, source='deliverypointcomments_set')
@@ -66,10 +62,17 @@ class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.subcategory_name', read_only=True)
     is_in_cart = serializers.SerializerMethodField()
     product_photo = ProductPhotoSerializer(many=True) 
+    main_photo = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Product
         fields = ['id', 'subcategory', 'count', 'subcategory_name', 'name', 'product_photo', 'characteristics', 'main_photo', 'price', 'rating', 'count_feedbacks', 'is_in_cart']
+
+    def get_main_photo(self, obj):
+        request = self.context.get('request')
+        if obj.main_photo:
+            return request.build_absolute_uri(obj.main_photo.url)
+        return None
 
     def get_is_in_cart(self, obj):
         cart_exists = models.Cart.objects.filter(product=obj).exists()
@@ -147,22 +150,6 @@ class SizeSerializer(serializers.ModelSerializer):
         model = models.SizeModel
         fields = '__all__'
         
-        
-class MyDeliveryPointSerializer(serializers.ModelSerializer):
-    main_photo = serializers.ImageField(source='delivery_point.main_photo')
-    city = serializers.CharField(source='delivery_point.city')
-    address = serializers.CharField(source='delivery_point.address')
-    schedule = serializers.CharField(source='delivery_point.schedule')
-    rating = serializers.IntegerField(source='delivery_point.rating')
-    coord_x = serializers.FloatField(source='delivery_point.coord_x')
-    coord_y = serializers.FloatField(source='delivery_point.coord_y')
-    delivery_point_id = serializers.IntegerField(source='delivery_point.id')
-
-    class Meta:
-        model = models.MyDeliveryPoint
-        fields = '__all__'
-
-
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -177,4 +164,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
             return user
         except ValidationError as e:
             raise serializers.ValidationError({'error': str(e)})
-        
+
+
+
+class UserPurchasesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserPurchases
+        fields = '__all__' 

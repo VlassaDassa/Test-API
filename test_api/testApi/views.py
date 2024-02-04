@@ -3,7 +3,7 @@ from django.db.models import F
 from rest_framework import viewsets, status
 from django.db import transaction
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from . import models
 from . import serializers
 import json
@@ -15,7 +15,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import CustomUserSerializer
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-
+from django.db.models import Subquery, OuterRef, Exists
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # Receiving all categories
@@ -50,13 +51,18 @@ def get_categories_with_subcategories(request):
     return JsonResponse(result_data, safe=False)
     
 
-# Adding bank card
+# Добавление банковской карты пользователя
 class AddBankCardViewSet(viewsets.ViewSet):
-    queryset = models.BankCards.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = serializers.BankCardsSerializer
+    # queryset = models.BankCards.objects.all()
+    # basename = 'bank-card'
     
-    def create(self, request):
+    def create(self, request, user_id):
+        user = get_object_or_404(models.CustomUser, pk=user_id)
+        request.data['user'] = user.id  # Добавляем user_id в данные запроса
         serializer = self.serializer_class(data=request.data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -94,11 +100,22 @@ def update_status_bank_card(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     
-# Receiving all bank cards
+# Получение банковских карта пользователя
 class BankCardsViewsSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
     queryset = models.BankCards.objects.all()
     serializer_class = serializers.BankCardsSerializer
-    
+
+    def get_queryset(self):
+        queryset = self.queryset
+        user_id = self.kwargs.get('user_id')
+
+        if user_id:
+            queryset = models.BankCards.objects.filter(user=user_id)
+
+        return queryset
+
     
 # Receiving all delivery points
 class DeliveryPointViewsSet(viewsets.ModelViewSet):
@@ -183,8 +200,19 @@ class DeliverySliderViewsSet(viewsets.ModelViewSet):
     
 # Receiving all cart products
 class CartProductViewsSet(viewsets.ModelViewSet):
-    queryset = models.Cart.objects.all()
+    permission_classes = [IsAuthenticated]
+
     serializer_class = serializers.CartProductSerializer
+    queryset = models.Cart.objects.all()
+    
+    def get_queryset(self):
+        queryset = self.queryset
+        user_id = self.kwargs.get('user_id')
+
+        if user_id:
+            queryset = models.Cart.objects.filter(user=user_id)
+
+        return queryset
     
 
 # Deleting cart product
@@ -211,8 +239,8 @@ def delete_cart_product_from_prod_id(request, pk):
 
 @api_view(['POST'])
 def add_product_to_cart(request):
-    
     product_id = request.data.get('product_id')
+    user_id = request.data.get('user_id')
     count = request.data.get('count')
     get_color = request.data.get('color', {}).get('selectColor')
     get_size = request.data.get('size', {}).get('selectSize')
@@ -233,28 +261,101 @@ def add_product_to_cart(request):
             color = get_object_or_404(models.ColorModel, color_value=relateInputs.get('color'))
             size = get_object_or_404(models.SizeModel, size_value=relateInputs.get('size'))
             
-        
         product = get_object_or_404(models.Product, id=int(product_id))
-        models.Cart.objects.create(product=product, count=int(count), color=color, size=size)
+        user = get_object_or_404(models.CustomUser, id=int(user_id))
+
+        models.Cart.objects.create(product=product, count=int(count), color=color, size=size, user=user)
     except Exception as ex:
         print(ex)
         return Response({'error': 'error'}, status=status.HTTP_404_NOT_FOUND)
         
     return Response({'message': 'Success!'}, status=200)
     
+
+
+# Получение пункта выдачи пользователя
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_delivery_point(request, user_id):
+    delivery_point = models.CustomUser.objects.get(id=user_id).delivery_point
+    main_photo_url = request.build_absolute_uri(delivery_point.main_photo.url) if delivery_point.main_photo else None
+    photos_urls = [request.build_absolute_uri(photo.photo.url) for photo in delivery_point.photos.all()]
+
+    data = {
+        'user_id': user_id,
+        'delivery_point_id': delivery_point.id,
+        'main_photo': main_photo_url,
+        'photos': photos_urls,
+        'city': delivery_point.city,
+        'address': delivery_point.address,
+        'schedule': delivery_point.schedule,
+        'rating': delivery_point.rating,
+        'coord_x': delivery_point.coord_x,
+        'coord_y': delivery_point.coord_y,
+    }
+
+    return JsonResponse(data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_purchases(request, start_limit, count, user_id):
+    data = models.UserPurchases.objects.filter(user=user_id).annotate(row_number=F('id')).order_by('id')
+    user_purchases = data[start_limit:count]
+
+    products = models.Product.objects.filter(
+        id__in=Subquery(user_purchases.values('product')),
+    ).annotate(
+        subcategory_name=Subquery(models.Subcategory.objects.filter(
+            id=OuterRef('subcategory')
+        ).values('subcategory_name')),
+        is_in_cart=Exists(models.Cart.objects.filter(
+            product=OuterRef('id'),
+            user=request.user,
+        )),
+    )
+
+    serializer = serializers.ProductSerializer(products, many=True, context={'request': request})
+
+    return JsonResponse({
+        'count_products': data.count(),
+        'products': serializer.data,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_on_road(request, user_id):
+    user_purchases = models.OnRoad.objects.filter(user=user_id).annotate(row_number=F('id')).order_by('id')
+
+    products = models.Product.objects.filter(
+        id__in=Subquery(user_purchases.values('product')),
+    ).annotate(
+        subcategory_name=Subquery(models.Subcategory.objects.filter(
+            id=OuterRef('subcategory')
+        ).values('subcategory_name')),
+        is_in_cart=Exists(models.Cart.objects.filter(
+            product=OuterRef('id'),
+            user=request.user,
+        )),
+    )
+
+    serializer = serializers.ProductSerializer(products, many=True, context={'request': request})
+
+    return JsonResponse({
+        'products': serializer.data,
+    })
+
     
-    
-    
-# Getting current delivery point
-class CurrentDeliveryPointViewsSet(viewsets.ModelViewSet):
-    serializer_class = serializers.MyDeliveryPointSerializer
-    queryset = models.MyDeliveryPoint.objects.all()
-    
-    
-# Getting current bank card
+# Получение основной банковской карты пользователя
 class CurrentBankCardViewsSet(viewsets.ModelViewSet):
     serializer_class = serializers.BankCardsSerializer
-    queryset = models.BankCards.objects.filter(main_card=True)
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id'] 
+        queryset = models.BankCards.objects.filter(user=user_id, main_card=True)
+        return queryset
     
     
 
@@ -267,12 +368,14 @@ def add_product_to_onroad(request):
             product_items = data.get('prod_data', [])
             bank_card_id = data.get('bank_card_id')
             delivery_point_id = data.get('delivery_point_id')
+            user_id = data.get('user_id')
             
             onroad_items = []
             cart_ids_to_delete = []
             
             bank_card = models.BankCards.objects.get(pk=bank_card_id)
-            delivery_point = models.MyDeliveryPoint.objects.get(pk=delivery_point_id).delivery_point
+            delivery_point = models.DeliveryPoints.objects.get(pk=delivery_point_id)
+            user = models.CustomUser.objects.get(pk=user_id)
             
 
             with transaction.atomic():
@@ -294,6 +397,7 @@ def add_product_to_onroad(request):
                         product=product,
                         bank_card=bank_card,
                         delivery_point=delivery_point,
+                        user=user,
                         totalPrice=total_price_item,
                         totalCount=total_count_item,
                         color=color,
@@ -380,7 +484,6 @@ def add_product_to_onroad(request):
                         product.characteristics['in_stock'] = flag
                         models.Product.objects.filter(pk=product.pk).update(characteristics=product.characteristics)
                                 
-                            
                     else:
                         count = product.count = int(product.count) - int(total_count_item) 
                         if count <= 0:
@@ -389,8 +492,6 @@ def add_product_to_onroad(request):
                         models.Product.objects.filter(pk=product.pk).update(characteristics=F('characteristics'))
                         product.save()
                     
-                    
-                
                 models.OnRoad.objects.bulk_create(onroad_items)
                 models.Cart.objects.filter(pk__in=cart_ids_to_delete).delete()
                 
@@ -452,7 +553,7 @@ def add_product(request):
     return Response({'message': 'Success!'}, status=200)
 
 
-# Receiving all data for particular delivery point
+
 class ParticularDeliveryPoint(viewsets.ModelViewSet):
     queryset = models.DeliveryPoints.objects.all()
     serializer_class = serializers.DeliveryPointSerializer
@@ -460,29 +561,40 @@ class ParticularDeliveryPoint(viewsets.ModelViewSet):
     def get_queryset(self):
         delivery_point_id = self.kwargs['id']
         delivery_point_data = self.queryset.filter(id=delivery_point_id)
-        
-        return delivery_point_data
-    
-    
-# Receiving status delivery point
-@api_view(['GET'])
-def status_delivery_point(request, id):
-    delivery_point_status = models.MyDeliveryPoint.objects.filter(delivery_point__id=id).exists()
 
-    if delivery_point_status:
-        return Response({'exists': True}, status=200)
-    else:
-        return Response({'exists': False}, status=200)
+        owners = models.CustomUser.objects.filter(delivery_point=delivery_point_id).values_list('id', flat=True)
+
+        return {
+            'delivery_point': delivery_point_data,
+            'owners': owners,
+        }
+
+    def list(self, request, *args, **kwargs):
+        queryset_data = self.get_queryset()
+        serializer = self.get_serializer(queryset_data['delivery_point'], many=True)
+
+        # Добавим owners к каждой записи
+        response_data = serializer.data
+        for serialized_data in response_data:
+            owners = queryset_data['owners']
+            serialized_data['owners'] = owners
+
+        return Response(response_data)
+
+    
     
 
-# Choice delivery point
+# Выбор пункта выдачи пользователя
 @api_view(['PUT'])
-def choice_delivery_point(request, id):
+@permission_classes([IsAuthenticated])
+def choice_delivery_point(request, user_id, delivery_point_id):
     try:
-        # Clear old
-        models.MyDeliveryPoint.objects.all().delete()
-        models.MyDeliveryPoint.objects.create(delivery_point_id=id)
-        
+        user = get_object_or_404(models.CustomUser, id=user_id)
+        new_delivery_point = get_object_or_404(models.DeliveryPoints, id=delivery_point_id)
+
+        user.delivery_point = new_delivery_point
+        user.save()
+
         return Response({'Message': 'Success!'}, status=200)
         
     except Exception as e:
@@ -526,6 +638,21 @@ def get_sizes_and_colors(request, id):
     
     
     return JsonResponse(send_data)
+
+
+# Получение username, города, статуса продавца, наличие уведомлений
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request, user_id):
+    data = models.CustomUser.objects.get(id=user_id)
+    
+    
+    return JsonResponse({
+        'username': data.username,
+        'city': data.city,
+        'is_seller': data.is_seller,
+        # TODO наличие уведомлений 
+    })
     
     
 
@@ -544,8 +671,10 @@ def get_sizes(request, params):
 
 # Add delivery point comment
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def add_delivery_point_comment(request):
     username = request.data.get('username')
+    user_id = request.data.get('user_id')
     rating = request.data.get('rating')
     content = request.data.get('content')
     delivery_point_id = request.data.get('deliveryPointId')
@@ -553,10 +682,12 @@ def add_delivery_point_comment(request):
     try:    
         # Creating comment
         delivery_point = get_object_or_404(models.DeliveryPoints, id=int(delivery_point_id))
+        user = get_object_or_404(models.CustomUser, id=int(user_id))
         
         models.DeliveryPointComments.objects.create(
             delivery_point = delivery_point,
             username = username,
+            user = user,
             rating = rating,
             content = content
         )
@@ -576,7 +707,13 @@ def add_delivery_point_comment(request):
     
     return Response({'Success': 'success!'}, status=200)
 
+
+# Определение есть ли комментарий от пользователя для этого пункта выдачи
+@api_view(['GET'])
+def get_user_comment_exist_point(request, user_id, delivery_point_id):
+    exists = models.DeliveryPointComments.objects.filter(user=user_id, delivery_point=delivery_point_id).exists()
     
+    return JsonResponse({'exists': exists})
 
 
 
@@ -659,16 +796,6 @@ class LogoutAPIView(APIView):
 
         return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
     
-
-
-
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user_id = request.user.id
-        print('[FFF]')
-        return Response({'user_id': user_id, 'message': 'Доступ разрешен'})
 
 
     

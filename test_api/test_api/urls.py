@@ -23,8 +23,7 @@ urlpatterns = [
     
     path('api/cat_with_sub/', views.get_categories_with_subcategories, name='cat-with-sub'),
     path('api/add_product/', views.add_product, name='add-product'),
-    path('api/status_delivery_point/<int:id>/', views.status_delivery_point, name='status-delivery-point'),
-    path('api/choice_delivery_point/<int:id>/', views.choice_delivery_point, name='choice-delivery-point'),
+    path('api/choice_delivery_point/<int:user_id>/<int:delivery_point_id>/', views.choice_delivery_point, name='choice-delivery-point'),
     
     path('api/get_sizes_and_colors/<int:id>/', views.get_sizes_and_colors, name='get-sizes-and-colors'),
     path('api/get_particular_sizes/<path:params>/', views.get_sizes, name='get-particular-sizes'),
@@ -34,8 +33,13 @@ urlpatterns = [
     path('api/register/', views.RegistrationAPIView.as_view(), name='register'),
     path('api/login/', views.LoginAPIView.as_view(), name='login'),
     path('api/logout/', views.LogoutAPIView.as_view(), name='logout'),
-    path('api/test/', views.ProfileView.as_view(), name='testtt'),
 
+    path('api/get_user_info/<int:user_id>/', views.get_user_info, name='get-user-info'),
+    path('api/get_user_delivery_point/<int:user_id>/', views.get_user_delivery_point, name='get-user-delivery-point'),
+    path('api/get_user_purchases/<int:start_limit>/<int:count>/<int:user_id>/', views.get_user_purchases, name='get-user-purchases'),
+    path('api/get_user_on_road/<int:user_id>/', views.get_user_on_road, name='get-user-on-road'),
+
+    path('api/get_user_comment_exist_point/<int:user_id>/<int:delivery_point_id>/', views.get_user_comment_exist_point, name='get-user-comment-exist-point'),
 ]
 
 
