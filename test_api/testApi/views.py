@@ -16,7 +16,8 @@ from .serializers import CustomUserSerializer
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Subquery, OuterRef, Exists
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+
 
 
 # Receiving all categories
@@ -55,8 +56,6 @@ def get_categories_with_subcategories(request):
 class AddBankCardViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.BankCardsSerializer
-    # queryset = models.BankCards.objects.all()
-    # basename = 'bank-card'
     
     def create(self, request, user_id):
         user = get_object_or_404(models.CustomUser, pk=user_id)
@@ -277,9 +276,12 @@ def add_product_to_cart(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_delivery_point(request, user_id):
-    delivery_point = models.CustomUser.objects.get(id=user_id).delivery_point
-    main_photo_url = request.build_absolute_uri(delivery_point.main_photo.url) if delivery_point.main_photo else None
-    photos_urls = [request.build_absolute_uri(photo.photo.url) for photo in delivery_point.photos.all()]
+    try:
+        delivery_point = models.CustomUser.objects.get(id=user_id).delivery_point
+        main_photo_url = request.build_absolute_uri(delivery_point.main_photo.url) if delivery_point.main_photo else None
+        photos_urls = [request.build_absolute_uri(photo.photo.url) for photo in delivery_point.photos.all()]
+    except:
+        return JsonResponse({}, safe=False)
 
     data = {
         'user_id': user_id,
@@ -723,7 +725,6 @@ class RegistrationAPIView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
-            refresh = RefreshToken.for_user(user)
             refresh.payload.update({
                 'user_id': user.id,
                 'username': user.username
@@ -764,7 +765,6 @@ class LoginAPIView(APIView):
         if user is None:
             return Response({'error': 'Неверные данные'},
                             status=status.HTTP_401_UNAUTHORIZED)
-
 
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({

@@ -5,6 +5,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from testApi import views
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 
 
@@ -40,6 +45,7 @@ urlpatterns = [
     path('api/get_user_on_road/<int:user_id>/', views.get_user_on_road, name='get-user-on-road'),
 
     path('api/get_user_comment_exist_point/<int:user_id>/<int:delivery_point_id>/', views.get_user_comment_exist_point, name='get-user-comment-exist-point'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 

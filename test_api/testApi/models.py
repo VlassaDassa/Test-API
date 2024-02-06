@@ -25,7 +25,7 @@ class DeliveryPoints(models.Model):
 
 
 class CustomUser(AbstractUser):
-    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE, related_name='user')
+    delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE, related_name='user', null=True, blank=True)
     phone_number = models.CharField(max_length=20, blank=False, null=False, unique=True)
     is_seller = models.BooleanField(default=False)
     city = models.CharField(max_length=50, blank=False, null=False, default='Конаково') # default="Конаково" - Временно
@@ -109,9 +109,6 @@ class ProductCharacteristics(models.Model):
     
     class Meta:
         unique_together = ('category', 'subcategory')
-    
-    
-
     
     
 class DeliveryPointComments(models.Model):

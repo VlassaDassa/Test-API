@@ -1,5 +1,5 @@
 from pathlib import Path
-import datetime
+from datetime import timedelta
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,6 +124,11 @@ REST_FRAMEWORK = {
     ],
 }
 
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
