@@ -16,7 +16,6 @@ from .serializers import CustomUserSerializer
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Subquery, OuterRef, Exists
-from django.utils import timezone
 
 
 
@@ -648,12 +647,9 @@ def get_sizes_and_colors(request, id):
 def get_user_info(request, user_id):
     data = models.CustomUser.objects.get(id=user_id)
     
-    
     return JsonResponse({
         'username': data.username,
-        'city': data.city,
         'is_seller': data.is_seller,
-        # TODO наличие уведомлений 
     })
     
     

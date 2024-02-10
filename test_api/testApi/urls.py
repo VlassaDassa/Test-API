@@ -1,6 +1,9 @@
 from rest_framework import routers
 from testApi import views
 
+
+
+
 router = routers.DefaultRouter()
 router.register(r'category', views.CategoryViewsSet)
 router.register(r'subcategory/(?P<id>\d+)', views.SubCategoryViewsSet)
@@ -23,8 +26,6 @@ router.register(r'get_colors', views.ColorViewsSet)
 router.register(r'get_sizes', views.SizeViewsSet)
 
 router.register(r'get_delivery_point/(?P<id>\d+)', views.ParticularDeliveryPoint)
-
-
 
 
 

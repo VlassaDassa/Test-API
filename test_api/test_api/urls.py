@@ -5,10 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from testApi import views
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 
