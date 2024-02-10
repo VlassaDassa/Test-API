@@ -159,7 +159,7 @@ class Cart(models.Model):
 class OnRoad(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    bank_card = models.ForeignKey(BankCards, on_delete=models.CASCADE)
+    bank_card = models.ForeignKey(BankCards, on_delete=models.SET_NULL, null=True, default=True)
     delivery_point = models.ForeignKey(DeliveryPoints, on_delete=models.CASCADE)
     color = models.ForeignKey(ColorModel, default=None, blank=True, null=True, on_delete=models.CASCADE)
     size = models.ForeignKey(SizeModel, default=None, blank=True, null=True, on_delete=models.CASCADE)

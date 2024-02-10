@@ -136,7 +136,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         start_index = int(self.kwargs['start_limit'])
         count = int(self.kwargs['count'])
-        products = models.Product.objects.annotate(row_number=F('id')).order_by('id')[start_index:count]
+        # products = models.Product.objects.annotate(row_number=F('id')).order_by('id')[start_index:count]
+        products = models.Product.objects.filter(characteristics__in_stock=True).annotate(row_number=F('id')).order_by('id')[start_index:count]
 
         return products
         
@@ -155,7 +156,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         products = self.get_queryset()
         serializer = self.get_serializer(products, many=True)
-        count_products = models.Product.objects.count()
+        count_products = models.Product.objects.filter(characteristics__in_stock=True).count()
         
         response_data = {
             'count_products': count_products,
