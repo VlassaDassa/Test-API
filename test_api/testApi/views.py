@@ -778,7 +778,7 @@ class LoginAPIView(APIView):
 
 class LogoutAPIView(APIView):
     def post(self, request):
-        refresh_token = request.data.get('refresh_token')
+        refresh_token = request.data.get('refresh_token') # С клиента нужно отправить refresh token
 
         if not refresh_token:
             return Response({'error': 'Необходим Refresh token'},
@@ -786,7 +786,7 @@ class LogoutAPIView(APIView):
 
         try:
             token = RefreshToken(refresh_token)
-            token.blacklist()
+            token.blacklist() # Добавить его в чёрный список. (На клиенте в это время, вы удаляете всю информацию о токене из localStorage)
         except Exception as e:
             return Response({'error': 'Неверный Refresh token'},
                             status=status.HTTP_400_BAD_REQUEST)
